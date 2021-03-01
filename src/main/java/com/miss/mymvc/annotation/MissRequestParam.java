@@ -13,5 +13,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface MissRequestParam {
 
-    String value();
+    String value() default "";
 }

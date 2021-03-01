@@ -1,0 +1,6 @@
+### fruit/detail
+GET http://192.168.1.8:8080/miss/fruit/detail?name=apple&color=red
+
+
+### test
+GET http://localhost:9999/test?name=12

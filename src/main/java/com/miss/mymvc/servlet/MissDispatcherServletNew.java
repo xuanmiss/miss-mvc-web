@@ -1,8 +1,6 @@
 package com.miss.mymvc.servlet;
 
-import com.miss.mymvc.annotation.MissController;
-import com.miss.mymvc.annotation.MissRequestMapping;
-import com.miss.mymvc.annotation.MissRequestParam;
+import com.miss.mymvc.annotation.*;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,10 +23,11 @@ import java.util.*;
  */
 public class MissDispatcherServletNew extends HttpServlet {
     private Properties properties = new Properties();
-    private List<String> classNames = new ArrayList<>();
-    private Map<String, Object> ioc = new HashMap<>();
-    private Map<String, Method> handlerMapping = new HashMap<>();
-    private Map<String, Object> controllerMap = new HashMap<>();
+    private List<String> classNames = new ArrayList<>();//所有的class
+    private Map<String, Object> ioc = new HashMap<>();//所有添加注解的class
+    private Map<String, Method> handlerMapping = new HashMap<>();//方法初始化
+    private Map<String, Object> controllerMap = new HashMap<>() ;//url映射初始化
+    private Map<Class<?>,Object> instanceTypeMap = new HashMap<>();//接口的实例化对象
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -43,6 +42,8 @@ public class MissDispatcherServletNew extends HttpServlet {
 
         //3.拿到扫描到的类,通过反射机制,实例化,并且放到ioc容器中(k-v  beanName-bean) beanName默认是首字母小写
         doInstance();
+
+        doIoc();
 
         //4.初始化HandlerMapping(将url和method对应上)
         initHandlerMapping();
@@ -84,10 +85,11 @@ public class MissDispatcherServletNew extends HttpServlet {
         }
 
         Method method = this.handlerMapping.get(url);
-
+//        System.out.println(method.getName());
         //方法的参数列表
 //        Class<?>[] parameterTypes = method.getParameterTypes();
         Parameter[] parameters =  method.getParameters();
+
         //请求参数
         Map<String,String[]> parameterMap = req.getParameterMap();
         //保存参数
@@ -95,10 +97,16 @@ public class MissDispatcherServletNew extends HttpServlet {
 
         //方法参数列表处理
         for(Parameter parameter : parameters){
-            if(parameter.isAnnotationPresent(MissRequestParam.class) && !parameter.getAnnotation(MissRequestParam.class).value().isEmpty()){
-                String value =Arrays.toString(parameterMap.get(parameter.getAnnotation(MissRequestParam.class).value())).replaceAll("\\[|\\]", "").replaceAll(",\\s", ",");
+//            System.out.println(parameter.toString());
+            if(parameter.isAnnotationPresent(MissRequestParam.class)){
+                if(!parameter.getAnnotation(MissRequestParam.class).value().isEmpty()) {
+                    String value = Arrays.toString(parameterMap.get(parameter.getAnnotation(MissRequestParam.class).value())).replaceAll("\\[|\\]", "").replaceAll(",\\s", ",");
+                    paramValues.add(value);
+                }else{
 
-                paramValues.add(value);
+                    String value = Arrays.toString(parameterMap.get(parameter.getName())).replaceAll("\\[|\\]", "").replaceAll(",\\s", ",");
+                    paramValues.add(value);
+                }
             }else if(parameter.getParameterizedType().getTypeName().contains("HttpServletRequest")){
                 paramValues.add(req);
             }else if(parameter.getParameterizedType().getTypeName().contains("HttpServletResponse")){
@@ -112,7 +120,8 @@ public class MissDispatcherServletNew extends HttpServlet {
 
 
         try{
-            method.invoke(this.controllerMap.get(url),paramValues.toArray());//参数列表必须是数组
+            Object container = method.invoke(this.controllerMap.get(url),paramValues.toArray());//参数列表必须是数组
+            resp.getWriter().write(container.toString());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -164,12 +173,46 @@ public class MissDispatcherServletNew extends HttpServlet {
                 Class<?> clazz = Class.forName(className);
                 if (clazz.isAnnotationPresent(MissController.class)) {
                     ioc.put(toLowerFirstWord(clazz.getSimpleName()), clazz.newInstance());
-                } else{
+                } else if(clazz.isAnnotationPresent(MissService.class)){
+                    ioc.put(toLowerFirstWord(clazz.getSimpleName()),clazz.newInstance());
+                    //实现的接口
+                    Class<?> [] interfaces = clazz.getInterfaces();
+                    for(Class clasz:interfaces){
+                        if(instanceTypeMap.get(clasz)!= null){
+                            throw new RuntimeException(clasz.getName() + "接口不能被多个类实现！");
+                        }
+                        instanceTypeMap.put(clasz,clazz.newInstance());
+                    }
+                }else{
                     continue;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 continue;
+            }
+        }
+    }
+
+    private void doIoc()  {
+        for (Map.Entry<String, Object> entry : ioc.entrySet()){
+            Field[] fields = entry.getValue().getClass().getDeclaredFields();
+
+            for(Field field : fields){
+                field.setAccessible(true);
+                if(field.isAnnotationPresent(MissAutowired.class)){
+                    Object object = instanceTypeMap.get(field.getType());
+                    System.out.println(object);
+                    if(object == null){
+                        object = ioc.get(toLowerFirstWord(field.getType().getSimpleName()));
+                    }
+                    System.out.println(object);
+                    try {
+                        field.set(entry.getValue(),object);
+                        System.out.println(field);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -203,7 +246,7 @@ public class MissDispatcherServletNew extends HttpServlet {
                     String url = annotation.value();
                     url = (baseUrl + "/" + url).replaceAll("/+","/");
                     handlerMapping.put(url,method);
-                    controllerMap.put(url,clazz.newInstance());
+                    controllerMap.put(url,entry.getValue());
                     System.out.println(url + "," + method);
 
                 }

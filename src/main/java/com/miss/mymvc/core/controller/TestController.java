@@ -1,8 +1,10 @@
 package com.miss.mymvc.core.controller;
 
+import com.miss.mymvc.annotation.MissAutowired;
 import com.miss.mymvc.annotation.MissController;
 import com.miss.mymvc.annotation.MissRequestMapping;
 import com.miss.mymvc.annotation.MissRequestParam;
+import com.miss.mymvc.core.service.TestService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,26 +19,30 @@ import java.io.IOException;
 @MissRequestMapping(value = "miss")
 public class TestController {
 
+    @MissAutowired
+    private TestService testService;
+
     @MissRequestMapping("/test")
-    public void test(HttpServletRequest request,
-                     HttpServletResponse response,
+    public String test(
                      @MissRequestParam("param")String param,
-                     @MissRequestParam("param2")String param2){
+                     @MissRequestParam("param2")String param2)throws IOException{
+
         System.out.println(param+"***"+param2);
-        try{
-            response.getWriter().write("miss test method success params:"+param+"***"+param2);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+        System.out.println(testService);
+        String res = testService.testParam(param,param2);
+        return res;
     }
 
     @MissRequestMapping("/test2")
-    public void test2(HttpServletRequest request,
-                      HttpServletResponse response){
-        try{
-            response.getWriter().println("miss test2 method success");
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+    public String test2(
+            @MissRequestParam("param") String param,
+            @MissRequestParam String param2)throws IOException{
+
+        System.out.println(param+"***"+param2);
+        System.out.println(testService);
+        String res = testService.testParam(param,param2);
+        return res;
     }
+
+
 }
