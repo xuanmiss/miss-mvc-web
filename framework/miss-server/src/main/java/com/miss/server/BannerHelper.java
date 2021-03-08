@@ -12,9 +12,9 @@ import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class BannerHelper {
-    public static void banner(String path,int color_index){
+    public static void banner(String path,int colorIndex){
         Ansi.Color color;
-        switch (color_index){
+        switch (colorIndex){
             case 0:color=BLACK;break;
             case 1:color=RED;break;
             case 2:color=GREEN;break;

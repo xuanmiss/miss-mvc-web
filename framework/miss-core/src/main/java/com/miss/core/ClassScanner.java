@@ -12,7 +12,7 @@ import java.util.jar.JarFile;
 
 /**
  * @project: miss-web
- * @package: PACKAGE_NAME
+ * @package: com.miss.core
  * @author: miss
  * @since: 2021/2/26 16:36
  * @history: 1.2021/2/26 created by miss
@@ -35,7 +35,6 @@ public class ClassScanner {
                 String jarFilePath = jarURLConnection.getJarFile().getName();
                 classes.addAll(getClassFromJar(jarFilePath, path));
             } else {
-                // TODO: 处理jar包以外的情况
                 getClassFromDir(classLoader, packageName, classes);
             }
         }
@@ -44,7 +43,7 @@ public class ClassScanner {
 
     /**
      * @return List<Class < ?>>
-     * @Author kevinlyz
+     * @Author miss
      * @Description 从jar包中获取资源
      * @Date 17:37 2019-06-08
      * @Param
@@ -56,7 +55,7 @@ public class ClassScanner {
         Enumeration<JarEntry> jarEntrys = jarFile.entries();
         while (jarEntrys.hasMoreElements()) {
             JarEntry jarEntry = jarEntrys.nextElement();
-            //获取类路径名  如  com/qcby/test/Test.class
+            //获取类路径名  如  com/miss/core/ClassScanner.class
             String entryName = jarEntry.getName();
             //获取的
             if (entryName.startsWith(path) && entryName.endsWith(".class")) {

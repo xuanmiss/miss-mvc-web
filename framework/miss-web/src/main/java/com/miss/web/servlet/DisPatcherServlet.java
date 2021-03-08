@@ -36,9 +36,11 @@ public class DisPatcherServlet extends HttpServlet {
                 MappingHandler handler = HandlerManager.mappingHandlerMap.get(url);
                 handler.handle(req, resp);
             }else {
+                resp.setStatus(400);
                 resp.getWriter().write("400! Miss's Not Found");
             }
         }catch (Exception e) {
+            resp.setStatus(500);
             resp.getWriter().write("500! Miss's Server Exception");
         }
     }
