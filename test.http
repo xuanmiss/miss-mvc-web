@@ -1,9 +1,9 @@
 ### test
-http://localhost:9011/miss/test?param=1&param2=12
+POST http://localhost:8080/miss/fruit/detail?name=watermelon
 
 
 ### test add
-http://localhost:8080/miss/fruit/add
+POST http://localhost:8080/miss/fruit/add
 Accept: application/json;*/*;charset=UTF-8
 Content-Type: application/json
 

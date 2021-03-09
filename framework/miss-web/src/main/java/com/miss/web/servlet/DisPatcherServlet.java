@@ -1,5 +1,6 @@
 package com.miss.web.servlet;
 
+import com.miss.web.annotation.RequestMethod;
 import com.miss.web.handler.HandlerManager;
 import com.miss.web.handler.MappingHandler;
 
@@ -21,20 +22,25 @@ public class DisPatcherServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        this.doPost(req, resp);
+        this.handleController(req, resp, RequestMethod.GET);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        handleController(req, resp);
+        this.handleController(req, resp, RequestMethod.POST);
     }
 
-    private void handleController(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void handleController(HttpServletRequest req, HttpServletResponse resp, RequestMethod requestMethod) throws ServletException, IOException {
         String url = req.getRequestURI().replace(req.getContextPath(), "").replaceAll("/+", "/");
         try {
             if (HandlerManager.mappingHandlerMap.get(url) != null) {
                 MappingHandler handler = HandlerManager.mappingHandlerMap.get(url);
-                handler.handle(req, resp);
+                if(handler.getSupportMethod().contains(requestMethod)) {
+                    handler.handle(req, resp);
+                }else {
+                    resp.setStatus(405);
+                    resp.getWriter().write("405! Miss's Method Not Allowed");
+                }
             }else {
                 resp.setStatus(400);
                 resp.getWriter().write("400! Miss's Not Found");

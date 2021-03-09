@@ -3,11 +3,10 @@ package com.miss.web.handler;
 import com.miss.core.annotation.Controller;
 import com.miss.core.bean.BeanFactory;
 import com.miss.web.annotation.RequestMapping;
+import com.miss.web.annotation.RequestMethod;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -47,10 +46,11 @@ public class HandlerManager {
             }
 
             String url = method.getAnnotation(RequestMapping.class).value();
-
+            RequestMethod[] supportMethod = method.getAnnotation(RequestMapping.class).method();
+            Set<RequestMethod> supportMethodSet = new HashSet<>(Arrays.asList(supportMethod));
             url = (baseUrl + addDelimiterToPath(url)).replaceAll("/+", "/");
 
-            MappingHandler mappingHandler = new MappingHandler(url, method, clazz);
+            MappingHandler mappingHandler = new MappingHandler(url, method, clazz, supportMethodSet);
             HandlerManager.mappingHandlerList.add(mappingHandler);
             HandlerManager.mappingHandlerMap.put(url, mappingHandler);
         }

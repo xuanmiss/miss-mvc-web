@@ -1,22 +1,13 @@
 package com.miss.test.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miss.core.annotation.Autowired;
 import com.miss.core.annotation.Controller;
 import com.miss.test.service.FruitService;
 import com.miss.test.utils.HttpClientUtil;
-import com.miss.web.annotation.RequestBody;
-import com.miss.web.annotation.RequestMapping;
-import com.miss.web.annotation.RequestParam;
-import com.miss.web.annotation.ResponseBody;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.miss.web.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @project: miss-mvc-web
@@ -32,7 +23,7 @@ public class FruitController {
     @Autowired
     public FruitService fruitService;
 
-    @RequestMapping("/detail")
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public String detailFruit(@RequestParam("name") String name,
                               @RequestParam("color") String color) {
         return fruitService.detailFruit(name, color);
