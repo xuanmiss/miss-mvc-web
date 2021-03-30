@@ -9,6 +9,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.miss.core.AnnotationUtil.checkoutComponentAnnotation;
+import static com.miss.core.AnnotationUtil.recursivelyCollectMetaAnnotations;
+
 /**
  * @project: miss-web
  * @package: bean
@@ -64,7 +67,7 @@ public class BeanFactory {
             recursivelyCollectMetaAnnotations(annotation, metaAnnotationTypeNames);
         }
 
-        if(!checkoutComponentAnnotation(metaAnnotationTypeNames)) {
+        if(!checkoutComponentAnnotation(metaAnnotationTypeNames, Component.class.getName())) {
             return true;
         }
 
@@ -89,20 +92,20 @@ public class BeanFactory {
         return true;
     }
 
-    private static void recursivelyCollectMetaAnnotations(Annotation annotation, Set<String> metaAnnotationTypeNames) {
-        if(metaAnnotationTypeNames.add(annotation.annotationType().getName())) {
-            for(Annotation metaAnnotation : annotation.annotationType().getAnnotations()) {
-                recursivelyCollectMetaAnnotations(metaAnnotation, metaAnnotationTypeNames);
-            }
-        }
-    }
-
-    private static boolean checkoutComponentAnnotation(Set<String> metaAnnotations) {
-       if(metaAnnotations != null && metaAnnotations.size() <= 0) {
-           return false;
-       }
-       return metaAnnotations.contains(Component.class.getName());
-    }
+//    private static void recursivelyCollectMetaAnnotations(Annotation annotation, Set<String> metaAnnotationTypeNames) {
+//        if(metaAnnotationTypeNames.add(annotation.annotationType().getName())) {
+//            for(Annotation metaAnnotation : annotation.annotationType().getAnnotations()) {
+//                recursivelyCollectMetaAnnotations(metaAnnotation, metaAnnotationTypeNames);
+//            }
+//        }
+//    }
+//
+//    private static boolean checkoutComponentAnnotation(Set<String> metaAnnotations) {
+//       if(metaAnnotations != null && metaAnnotations.size() <= 0) {
+//           return false;
+//       }
+//       return metaAnnotations.contains(Component.class.getName());
+//    }
 
 
 }

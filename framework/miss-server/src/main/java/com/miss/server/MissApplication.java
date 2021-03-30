@@ -4,6 +4,8 @@ import com.miss.core.ClassScanner;
 import com.miss.core.bean.BeanFactory;
 import com.miss.web.handler.HandlerManager;
 
+import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.miss.server.BannerHelper.banner;
@@ -31,17 +33,28 @@ public class MissApplication {
         System.out.println("Hello Miss-Web application! ");
         banner(this.getClass().getClassLoader().getResource("banner.txt").getPath(), 4);
 
-        TomcatServer tomcatServer = new TomcatServer(args);
+//        ((ProtectionDomain)this.getClass().getClassLoader().domains.toArray()[0]).codesource.getLocation().getPath();
+
 
         try {
-            tomcatServer.startServer();
             System.out.println("Root package is: " + this.rootClass.getPackage().getName());
+            List<Class<?>> defaultClassList = new ArrayList<>();
+//            (AppClassLoader)this.getClass().getClassLoader()
+            ClassScanner.getClassFromDir(this.getClass().getClassLoader(), "com.miss", defaultClassList);
             List<Class<?>> classList = ClassScanner.scannClasses(this.rootClass.getPackage().getName());
+            classList.addAll(defaultClassList);
             BeanFactory.initBean(classList);
             HandlerManager.resolveMappingHandler();
+            WebServerFactory webServerFactory = this.getWebServerFactory();
+            WebServer webServer = webServerFactory.getWebServer(args);
+            webServer.start();
 
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private WebServerFactory getWebServerFactory() {
+        return (WebServerFactory) BeanFactory.getBeanByClass(WebServerFactory.class);
     }
 }

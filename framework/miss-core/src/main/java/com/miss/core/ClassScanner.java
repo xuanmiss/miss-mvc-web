@@ -68,7 +68,7 @@ public class ClassScanner {
         return classes;
     }
 
-    private static void getClassFromDir(ClassLoader classLoader, String packageName, List<Class<?>> classNames) throws ClassNotFoundException {
+    public static void getClassFromDir(ClassLoader classLoader, String packageName, List<Class<?>> classNames) throws ClassNotFoundException {
         System.out.println(classLoader.getResource(""));
         URL url = classLoader.getResource(packageName.replaceAll("\\.", "/"));
         File dir = new File(url.getFile());

@@ -16,7 +16,7 @@ import org.apache.catalina.startup.Tomcat;
  * @since: 2021/3/1 12:13
  * @history: 1.2021/3/1 created by miss
  */
-public class TomcatServer {
+public class TomcatServer implements WebServer{
 
     private Tomcat tomcat;
 
@@ -61,6 +61,16 @@ public class TomcatServer {
 
         System.out.println(tomcat.getServer().getAddress());
 
+
+    }
+
+    @Override
+    public void start() throws LifecycleException {
+        this.startServer();
+    }
+
+    @Override
+    public void stop() {
 
     }
 }
