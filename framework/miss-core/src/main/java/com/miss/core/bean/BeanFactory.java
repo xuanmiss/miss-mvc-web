@@ -4,7 +4,6 @@ import com.miss.core.annotation.Autowired;
 import com.miss.core.annotation.Component;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,11 +51,15 @@ public class BeanFactory {
                 throw new Exception("循环依赖异常");
             }
         }
-        System.out.println("初始化bean结束: " + toCreateBeanClass.size());
+        System.out.println("初始化bean结束: " + toCreateBeanClass.size() + "已装入总bean个数: " + classToBeanMap.size());
 
     }
 
     private static boolean finishCreate(Class<?> clazz) throws IllegalAccessException, InstantiationException {
+
+        if (clazz.isAnnotation()) {
+            return true;
+        }
 
         // 如果不是bean的话，直接返回true && !clazz.isAnnotationPresent()
         Set<String> metaAnnotationTypeNames = new LinkedHashSet<>();
