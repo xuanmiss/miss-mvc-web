@@ -1,14 +1,21 @@
 package com.miss.web.handler;
 
+import com.miss.core.AnnotationUtil;
+import com.miss.core.annotation.AliasFor;
 import com.miss.core.annotation.Controller;
 import com.miss.core.bean.BeanFactory;
+import com.miss.web.annotation.GetMapping;
 import com.miss.web.annotation.RequestMapping;
+import com.miss.web.annotation.RequestMethod;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.miss.core.AnnotationUtil.recursivelyCollectMetaAnnotations;
 
 /**
  * @project: miss-mvc-web
@@ -24,7 +31,7 @@ public class HandlerManager {
 
     public static Map<String, MappingHandler> mappingHandlerMap = new ConcurrentHashMap<>();
 
-    public static void resolveMappingHandler() {
+    public static void resolveMappingHandler() throws IllegalAccessException {
         for(Map.Entry bean : BeanFactory.classToBeanMap.entrySet()) {
             Class<?> clazz = bean.getValue().getClass();
             if (clazz.isAnnotationPresent(Controller.class)) {
@@ -33,7 +40,7 @@ public class HandlerManager {
         }
     }
 
-    private static void presentHandlerFromController(Class<?> clazz) {
+    private static void presentHandlerFromController(Class<?> clazz) throws IllegalAccessException {
         String baseUrl = "";
         if(clazz.isAnnotationPresent(RequestMapping.class)) {
             baseUrl = clazz.getAnnotation(RequestMapping.class).value();
@@ -47,13 +54,27 @@ public class HandlerManager {
             }
 
             String url = method.getAnnotation(RequestMapping.class).value();
-
+            RequestMethod[] supportMethod = method.getAnnotation(RequestMapping.class).method();
+            Set<RequestMethod> supportMethodSet = new HashSet<>(Arrays.asList(supportMethod));
             url = (baseUrl + addDelimiterToPath(url)).replaceAll("/+", "/");
 
-            MappingHandler mappingHandler = new MappingHandler(url, method, clazz);
+            MappingHandler mappingHandler = new MappingHandler(url, method, clazz, supportMethodSet);
             HandlerManager.mappingHandlerList.add(mappingHandler);
             HandlerManager.mappingHandlerMap.put(url, mappingHandler);
         }
+    }
+
+
+    private static Annotation findMethodMappingAnnotation(Annotation[] annotations) {
+
+        for (Annotation annotation : annotations) {
+            Set<String> metaAnnotationTypeNames = new LinkedHashSet<>();
+            recursivelyCollectMetaAnnotations(annotation, metaAnnotationTypeNames);
+            if(metaAnnotationTypeNames.contains(RequestMapping.class.getName())) {
+                return annotation;
+            }
+        }
+        return null;
     }
 
     private static String addDelimiterToPath(String url) {

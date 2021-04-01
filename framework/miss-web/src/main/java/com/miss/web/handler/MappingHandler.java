@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miss.core.bean.BeanFactory;
 import com.miss.web.annotation.RequestBody;
-import com.miss.web.annotation.RequestMapping;
+import com.miss.web.annotation.RequestMethod;
 import com.miss.web.annotation.RequestParam;
 import com.miss.web.annotation.ResponseBody;
 
@@ -15,10 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @project: miss-mvc-web
@@ -34,12 +31,27 @@ public class MappingHandler {
     private Method method;
 
     private Class<?> controllerClass;
+
+    private Set<RequestMethod> supportMethod;
+
     private final ObjectMapper objectMapper;
+
+    public Set<RequestMethod> getSupportMethod() {
+        return supportMethod;
+    }
 
     public MappingHandler(String uri, Method method, Class<?> controllerClass) {
         this.uri = uri;
         this.method = method;
         this.controllerClass = controllerClass;
+        this.objectMapper = new ObjectMapper();
+    }
+
+    public MappingHandler(String uri, Method method, Class<?> controllerClass, Set<RequestMethod> supportMethod) {
+        this.uri = uri;
+        this.method = method;
+        this.controllerClass = controllerClass;
+        this.supportMethod = supportMethod;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -78,7 +90,7 @@ public class MappingHandler {
                                     replaceAll(",\\s", ",");
                 }
                 paramValues.add(value);
-            } if (parameter.isAnnotationPresent(RequestBody.class)) {
+            } else if (parameter.isAnnotationPresent(RequestBody.class)) {
                requestBody = this.objectMapper.readValue(req.getInputStream(), parameter.getType());
                paramValues.add(requestBody);
             }else if (parameter.getParameterizedType() == ServletRequest.class) {
