@@ -19,11 +19,39 @@ import java.util.jar.JarFile;
  */
 public class ClassScanner {
 
+    public static List<Class<?>> loadClassFromPackages(List<String> packageNames) throws IOException, ClassNotFoundException{
+        List<Class<?>> classList = new ArrayList<>();
+        for (String packageName : packageNames) {
+            classList.addAll(scannClasses(packageName));
+        }
+        return classList;
+    }
+
     public static List<Class<?>> scannClasses(String packageName) throws IOException, ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<>();
         String path = packageName.replace(".", "/");
         //获取类加载器
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Enumeration<URL> resources = classLoader.getResources(path);
+
+        while (resources.hasMoreElements()) {
+            URL resource = resources.nextElement();
+            //处理资源类型是jar包的情况
+            if (resource.getProtocol().contains("jar")) {
+                JarURLConnection jarURLConnection =
+                        (JarURLConnection) resource.openConnection();
+                String jarFilePath = jarURLConnection.getJarFile().getName();
+                classes.addAll(getClassFromJar(jarFilePath, path));
+            } else {
+                getClassFromDir(classLoader, packageName, classes);
+            }
+        }
+        return classes;
+    }
+
+    public static List<Class<?>> scannClasses(ClassLoader classLoader, String packageName) throws IOException, ClassNotFoundException {
+        List<Class<?>> classes = new ArrayList<>();
+        String path = packageName.replace(".", "/");
         Enumeration<URL> resources = classLoader.getResources(path);
 
         while (resources.hasMoreElements()) {

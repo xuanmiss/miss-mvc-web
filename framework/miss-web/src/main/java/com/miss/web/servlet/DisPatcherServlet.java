@@ -35,7 +35,7 @@ public class DisPatcherServlet extends HttpServlet {
         try {
             if (HandlerManager.mappingHandlerMap.get(url) != null) {
                 MappingHandler handler = HandlerManager.mappingHandlerMap.get(url);
-                if(handler.getSupportMethod().contains(requestMethod)) {
+                if(handler.getSupportMethod().isEmpty() || handler.getSupportMethod().contains(requestMethod)) {
                     handler.handle(req, resp);
                 }else {
                     resp.setStatus(405);

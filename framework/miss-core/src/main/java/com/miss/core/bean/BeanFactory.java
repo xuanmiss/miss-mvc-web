@@ -4,7 +4,6 @@ import com.miss.core.annotation.Autowired;
 import com.miss.core.annotation.Component;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,8 +20,18 @@ import static com.miss.core.AnnotationUtil.recursivelyCollectMetaAnnotations;
  */
 public class BeanFactory {
 
-    // ConcurrentHashMap 保存 Bean的容器
+    // 1 -> 1 以class 为key，单例
     public static Map<Class<?>, Object> classToBeanMap = new ConcurrentHashMap<>();
+
+    // 1 -> 1 以class类名首字母小写为bean的key，单例
+    public static Map<String, Object> nameToBeanMap = new ConcurrentHashMap<>();
+
+    /**
+     * <p>
+     * 1 -> nameToBeanMap 以类型（interface） 为key， Map<name, object> 以class类名首字母写为key
+     * </p>
+     */
+    public static Map<Class<?>, Map<String, Object>> typeToBeanMap = new ConcurrentHashMap<>();
 
     /**
      * @param clazz
@@ -30,6 +39,39 @@ public class BeanFactory {
      */
     public static Object getBeanByClass(Class<?> clazz) {
         return classToBeanMap.get(clazz);
+    }
+
+    /**
+     * <p>
+     *
+     * </p>
+     * @author miss
+     * @name getBeanOfType
+     * @description
+     * @date 11:52 2021/4/1
+     * @since
+     * @param fieldType
+     * @return java.lang.Object
+     */
+    public static Object getBeanOfType(Class<?> fieldType) {
+        return Optional.ofNullable(typeToBeanMap.get(fieldType))
+                .map(map -> {
+                    List<Object> beans = Arrays.asList(map.values().toArray());
+
+                    if (!beans.isEmpty()) {
+                        return beans.get(0);
+                    }else {
+                        return null;
+                    }
+                }).orElse(null);
+    }
+
+    public static Map<String, Object> getBeansOfType(Class<?> type) {
+        return typeToBeanMap.get(type);
+    }
+
+    public static Object getBeanByName(String beanName) {
+        return nameToBeanMap.get(beanName);
     }
 
     public static void initBean(List<Class<?>> classList) throws Exception {
@@ -55,11 +97,15 @@ public class BeanFactory {
                 throw new Exception("循环依赖异常");
             }
         }
-        System.out.println("初始化bean结束: " + toCreateBeanClass.size());
+        System.out.println("初始化bean结束: " + toCreateBeanClass.size() + "已装入总bean个数: " + classToBeanMap.size());
 
     }
 
     private static boolean finishCreate(Class<?> clazz) throws IllegalAccessException, InstantiationException {
+
+        if (clazz.isAnnotation()) {
+            return true;
+        }
 
         // 如果不是bean的话，直接返回true && !clazz.isAnnotationPresent()
         Set<String> metaAnnotationTypeNames = new LinkedHashSet<>();
@@ -71,15 +117,31 @@ public class BeanFactory {
             return true;
         }
 
-
-
-
         Object bean = clazz.newInstance();
+        classToBeanMap.put(clazz, bean);
+        nameToBeanMap.put(toLowerFirstWord(clazz.getSimpleName()), bean);
+
+        Class<?> [] interfaces = clazz.getInterfaces();
+        for(Class<?> clasz : interfaces) {
+            if(typeToBeanMap.get(clasz) != null) {
+                typeToBeanMap.get(clasz).put(toLowerFirstWord(clazz.getSimpleName()), bean);
+            }else {
+                Map<String, Object> nameBeanMap = new ConcurrentHashMap<>();
+                nameBeanMap.put(toLowerFirstWord(clazz.getSimpleName()), bean);
+                typeToBeanMap.put(clasz, nameBeanMap);
+            }
+        }
 
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(Autowired.class)) {
+                Object reliantBean;
                 Class<?> fieldType = field.getType();
-                Object reliantBean = BeanFactory.getBeanByClass(fieldType);
+
+                if (fieldType.isInterface()) {
+                    reliantBean = BeanFactory.getBeanOfType(fieldType);
+                }else {
+                    reliantBean = BeanFactory.getBeanByClass(fieldType);
+                }
                 if (reliantBean == null) {
                     // 如果没有存在bean, 则返回false，先处理下一个class
                     return false;
@@ -88,7 +150,6 @@ public class BeanFactory {
                 field.set(bean, reliantBean);
             }
         }
-        classToBeanMap.put(clazz, bean);
         return true;
     }
 
@@ -106,6 +167,16 @@ public class BeanFactory {
 //       }
 //       return metaAnnotations.contains(Component.class.getName());
 //    }
-
+    /**
+     * 把字符串的首字母小写
+     *
+     * @param name
+     * @return
+     */
+    private static String toLowerFirstWord(String name) {
+        char[] charArray = name.toCharArray();
+        charArray[0] += 32;
+        return String.valueOf(charArray);
+    }
 
 }
