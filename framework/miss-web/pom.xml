@@ -34,6 +34,11 @@
             <version>2.10.4</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.11</version>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>com.fasterxml.jackson.datatype</groupId>-->
 <!--            <artifactId>jackson-datatype-jdk8</artifactId>-->

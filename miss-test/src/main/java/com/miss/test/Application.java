@@ -1,6 +1,6 @@
 package com.miss.test;
 
-import com.miss.server.MissApplication;
+import com.miss.web.MissApplication;
 
 /**
  * @project: miss-mvc-web

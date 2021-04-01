@@ -1,4 +1,4 @@
-package com.miss.server;
+package com.miss.web;
 
 /**
  * @project: miss-core
