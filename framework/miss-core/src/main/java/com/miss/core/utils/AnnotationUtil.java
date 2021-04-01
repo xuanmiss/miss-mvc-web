@@ -1,4 +1,4 @@
-package com.miss.core;
+package com.miss.core.utils;
 
 import com.miss.core.annotation.Component;
 

@@ -1,21 +1,16 @@
 package com.miss.web.handler;
 
-import com.miss.core.AnnotationUtil;
-import com.miss.core.annotation.AliasFor;
 import com.miss.core.annotation.Controller;
 import com.miss.core.bean.BeanFactory;
-import com.miss.web.annotation.GetMapping;
 import com.miss.web.annotation.RequestMapping;
 import com.miss.web.annotation.RequestMethod;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.miss.core.AnnotationUtil.recursivelyCollectMetaAnnotations;
+import static com.miss.core.utils.AnnotationUtil.recursivelyCollectMetaAnnotations;
 
 /**
  * @project: miss-mvc-web

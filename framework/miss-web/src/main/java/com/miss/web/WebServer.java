@@ -1,6 +1,4 @@
-package com.miss.server;
-
-import org.apache.catalina.LifecycleException;
+package com.miss.web;
 
 /**
  * @project: miss-core
@@ -13,9 +11,9 @@ public interface WebServer {
 
     /**
      * webserver start method
-     * @throws LifecycleException
+     * @throws Exception
      */
-    void start() throws LifecycleException;
+    void start() throws Exception;
 
     void stop();
 }

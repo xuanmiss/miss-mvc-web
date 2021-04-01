@@ -1,14 +1,15 @@
 package com.miss.core;
 
+import com.miss.core.utils.PropUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * @project: miss-web
@@ -33,7 +34,6 @@ public class ClassScanner {
         //获取类加载器
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Enumeration<URL> resources = classLoader.getResources(path);
-
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
             //处理资源类型是jar包的情况
@@ -47,6 +47,18 @@ public class ClassScanner {
             }
         }
         return classes;
+    }
+
+    public static List<Class<?>> loadClassFromNameList(List<String> classNames) {
+        return classNames.stream()
+                .map(name -> {
+                    try {
+                        return Thread.currentThread().getContextClassLoader().loadClass(name);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public static List<Class<?>> scannClasses(ClassLoader classLoader, String packageName) throws IOException, ClassNotFoundException {
@@ -109,4 +121,17 @@ public class ClassScanner {
             }
         }
     }
+
+    public static List<Properties> loadPropConfig(String resource) throws IOException {
+        List<Properties> propertiesList = new ArrayList<>();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Enumeration<URL> resources = classLoader.getResources(resource);
+        while (resources.hasMoreElements()) {
+            URL url = resources.nextElement();
+            File file = new File(url.getFile());
+            propertiesList.add(PropUtils.loadProperties(file));
+        }
+        return propertiesList;
+    }
+
 }

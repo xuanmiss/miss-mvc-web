@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.miss.core.AnnotationUtil.checkoutComponentAnnotation;
-import static com.miss.core.AnnotationUtil.recursivelyCollectMetaAnnotations;
+import static com.miss.core.utils.AnnotationUtil.checkoutComponentAnnotation;
+import static com.miss.core.utils.AnnotationUtil.recursivelyCollectMetaAnnotations;
 
 /**
  * @project: miss-web
@@ -32,6 +32,16 @@ public class BeanFactory {
      * </p>
      */
     public static Map<Class<?>, Map<String, Object>> typeToBeanMap = new ConcurrentHashMap<>();
+
+    public static Properties properties = new Properties();
+
+    public static String getProperty(String name) {
+        return properties.getProperty(name);
+    }
+
+    public static String getProperty(String name, String defaultValue) {
+        return properties.getProperty(name, defaultValue);
+    }
 
     /**
      * @param clazz
@@ -179,4 +189,7 @@ public class BeanFactory {
         return String.valueOf(charArray);
     }
 
+    public static void loadProperties(Properties prop) {
+        properties.putAll(prop);
+    }
 }

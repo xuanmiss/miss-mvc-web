@@ -1,4 +1,4 @@
-package com.miss.server;
+package com.miss.web;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
@@ -8,22 +8,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static org.fusesource.jansi.Ansi.Color.*;
-import static org.fusesource.jansi.Ansi.ansi;
-
 public class BannerHelper {
     public static void banner(String path,int colorIndex){
         Ansi.Color color;
         switch (colorIndex){
-            case 0:color=BLACK;break;
-            case 1:color=RED;break;
-            case 2:color=GREEN;break;
-            case 3:color=YELLOW;break;
-            case 4:color=BLUE;break;
-            case 5:color=MAGENTA;break;
-            case 6:color=CYAN;break;
-            case 7:color=WHITE;break;
-            default:color=DEFAULT;
+            case 0:color= Ansi.Color.BLACK;break;
+            case 1:color= Ansi.Color.RED;break;
+            case 2:color= Ansi.Color.GREEN;break;
+            case 3:color= Ansi.Color.YELLOW;break;
+            case 4:color= Ansi.Color.BLUE;break;
+            case 5:color= Ansi.Color.MAGENTA;break;
+            case 6:color= Ansi.Color.CYAN;break;
+            case 7:color= Ansi.Color.WHITE;break;
+            default:color= Ansi.Color.DEFAULT;
         }
         BufferedReader in= null;
         AnsiConsole.systemInstall();
@@ -31,7 +28,7 @@ public class BannerHelper {
             in = new BufferedReader(new FileReader(new File(path)));
             String str="";
             while ((str=in.readLine())!=null){
-                System.out.println(ansi().fg(color).a(str).reset());
+                System.out.println(Ansi.ansi().fg(color).a(str).reset());
             }
         } catch (Exception e) {
             e.printStackTrace();
