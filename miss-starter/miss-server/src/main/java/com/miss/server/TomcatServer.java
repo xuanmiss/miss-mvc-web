@@ -5,7 +5,6 @@ import com.miss.web.WebServer;
 import com.miss.web.servlet.DisPatcherServlet;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;

@@ -2,12 +2,13 @@
 POST http://localhost:8080/miss/fruit/detail?name=watermelon
 
 
+
 ### test add
 POST http://localhost:8088/miss/fruit/add
 Accept: application/json;*/*;charset=UTF-8
 Content-Type: application/json
 
 {
-  "name": "peach",
+  "nam e": "epeach",
   "age": 19
 }
