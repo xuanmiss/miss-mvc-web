@@ -105,7 +105,7 @@ public class MappingHandler {
         Object ctl = BeanFactory.getBeanByClass(controllerClass);
         try {
             Object body = method.invoke(ctl, paramValues.toArray());
-            Object responseBody = this.convertBody(body, method);
+            Object responseBody = this.convertBody(body, method, res);
             res.getWriter().write(responseBody.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,9 +113,12 @@ public class MappingHandler {
         return true;
     }
 
-    private Object convertBody(Object body, Method method) throws JsonProcessingException {
+    private Object convertBody(Object body, Method method, HttpServletResponse response) throws JsonProcessingException {
         if(method.isAnnotationPresent(ResponseBody.class)) {
             body = this.objectMapper.writeValueAsString(body);
+            response.addHeader("Content-Type", "application/json;charset=utf-8");
+        }else {
+            response.addHeader("Content-Type", "application/text;charset=utf-8");
         }
         return body;
     }

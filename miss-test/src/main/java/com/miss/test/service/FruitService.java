@@ -1,9 +1,11 @@
 package com.miss.test.service;
 
 import com.miss.core.annotation.Component;
+import com.miss.test.entity.Fruit;
+import com.miss.test.utils.CusStringUtils;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @project: miss-mvc-web
@@ -15,12 +17,21 @@ import java.util.UUID;
 @Component
 public class FruitService {
 
-    public String detailFruit(String name, String color) {
-        return "Fruit is: " + name + " " + color;
+    private final Map<String, Fruit> fruitMaps = new HashMap<>();
+
+    public Fruit detailFruit(String id) {
+        return fruitMaps.get(id);
     }
 
-    public Map<String, Object> addFruit(Map<String, Object> fruit) {
-        fruit.put("requestId", UUID.randomUUID().toString());
+    public Fruit addFruit(Fruit fruit) {
+        if (fruit.getId() == null || fruit.getId().isEmpty()) {
+            fruit.setId(CusStringUtils.generateId());
+        }
+        fruitMaps.put(fruit.getId(), fruit);
         return fruit;
+    }
+
+    public List<Fruit> listFruit() {
+        return new ArrayList<>(fruitMaps.values());
     }
 }

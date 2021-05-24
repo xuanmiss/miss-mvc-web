@@ -1,6 +1,19 @@
 ### fruit/detail
-GET http://localhost:8088/miss2/fruit/detail?name=apple&color=red
+GET http://localhost:8088/miss2/fruit/detail?id=0a2c429fb25747eb969d635ecb46e725
 
+### fruit/add
+POST http://localhost:8088/miss2/fruit/add
+Content-Type: application/json
+Accept: application/json, text/plain, */*
+
+{
+ "fruitName": "苹果",
+ "fruitColor": "红色",
+ "fruitPrice": "15.3"
+}
+
+### fruit/list
+GET http://localhost:8088/miss2/fruit/list
 
 ### test
 GET http://localhost:9999/test?name=12
