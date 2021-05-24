@@ -10,6 +10,7 @@
     <modules>
         <module>framework</module>
         <module>miss-test</module>
+        <module>miss-starter</module>
     </modules>
     <packaging>pom</packaging>
 
