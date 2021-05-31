@@ -26,6 +26,7 @@ miss-mvc-web
 
 ### 项目功能 `feature`
 
+
 - [x] 完善 `@ResponseBody` 的 `json` 序列化和反序列化相关
 - [x] 完善 `@RequestMapping` 的 `method` 属性，区别请求类型，支持 `GET`, `POST`
 - [x] 完善 `classLoader` 允许扫描符合规范的外部jar包和加载 `bean`
