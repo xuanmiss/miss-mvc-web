@@ -1,0 +1,13 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+target
+.idea
+
+/framework/framework.iml
+/framework/miss-core/miss-core.iml
+/framework/miss-server/miss-server.iml
+/miss-starter/miss-server/miss-server.iml
+/miss-starter/miss-starter.iml
+/miss-test/miss-test.iml
+/framework/miss-web/miss-web.iml
+/*/*.iml
