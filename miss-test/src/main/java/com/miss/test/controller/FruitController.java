@@ -7,10 +7,8 @@ import com.miss.test.service.FruitService;
 import com.miss.test.utils.HttpClientUtil;
 import com.miss.web.annotation.*;
 
-import javax.xml.ws.ResponseWrapper;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @project: miss-mvc-web
@@ -43,10 +41,10 @@ public class FruitController {
     public List<Fruit> listFruit() {
         return fruitService.listFruit();
     }
-    
+
     @RequestMapping("/client")
     @ResponseBody
     public Fruit clientFruit(@RequestBody Fruit fruit) throws IOException {
-       return HttpClientUtil.post("http://localhost:8080/miss/fruit/add", fruit, Fruit.class);
+        return HttpClientUtil.post("http://localhost:8080/miss/fruit/add", fruit, Fruit.class);
     }
 }

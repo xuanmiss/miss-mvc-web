@@ -34,4 +34,5 @@ miss-mvc-web
 - [ ] 完善 `GET`, `POST`, `PUT`, `DELETE` 等 `RESTful api`
 - [x] 添加 `web server` 抽离，支持自定义web服务器，以 `starter` 方式加载  
 - [ ] 增加支持现有的 `data` 相关框架 `mybatis` 的 `starter` 版本
+- [ ] 添加 `event` 机制，并添加执行线程池
 - [ ] 修改 `Application.run()` 将除了核心class的加载之外的逻辑以 `event` 的方式发布出去
