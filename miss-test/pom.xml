@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.miss</groupId>
-            <artifactId>miss-server</artifactId>
+            <artifactId>miss-starter-web-server</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>

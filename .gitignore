@@ -11,3 +11,7 @@ target
 /miss-test/miss-test.iml
 /framework/miss-web/miss-web.iml
 /*/*.iml
+*.classpath
+*.project
+*.prefs
+.theia

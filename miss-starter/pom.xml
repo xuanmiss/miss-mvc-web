@@ -16,7 +16,7 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
     <modules>
-        <module>miss-server</module>
+        <module>miss-starter-web-server</module>
     </modules>
 
 </project>
