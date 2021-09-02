@@ -35,4 +35,6 @@ miss-mvc-web
 - [x] 添加 `web server` 抽离，支持自定义web服务器，以 `starter` 方式加载  
 - [ ] 增加支持现有的 `data` 相关框架 `mybatis` 的 `starter` 版本
 - [ ] 添加 `event` 机制，并添加执行线程池
+  - 首先需要添加Bean构造前后的处理方法，允许自定义Bean前后构造的逻辑
+  - 将Event的Listener的添加逻辑放在Bean的后置处理中实现
 - [ ] 修改 `Application.run()` 将除了核心class的加载之外的逻辑以 `event` 的方式发布出去
